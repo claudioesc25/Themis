@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.tooling.preview.Preview
 import com.Duoc.Themis.ui.theme.MyApplicationTheme
@@ -85,10 +86,11 @@ class MainActivity : ComponentActivity() {
                         value = contraseña,
                         onValueChange = { contraseña = it },
                         label = { Text("Ingresa tu contraseña") },
+                        visualTransformation = PasswordVisualTransformation(),
                         isError = validarContraseña(),
                         supportingText = {
-                            if(validarNombre()){
-                                Text( "Debe ingresar una contraseña", color = Red)
+                            if (validarContraseña()) {
+                                Text("Debe ingresar una contraseña", color = Red)
                             }
                         }
                     )
