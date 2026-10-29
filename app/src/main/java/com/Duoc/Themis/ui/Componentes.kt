@@ -16,13 +16,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.Duoc.Themis.R
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun LogoThemis(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(id = R.drawable.logo_themis),
         contentDescription = "Logo de Themis",
-        modifier = modifier
+        modifier = modifier.clip(RoundedCornerShape(percent = 20))
     )
 }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.Duoc.Themis.model.ErroresFormulario
 import com.Duoc.Themis.model.FormularioAuth
 import com.Duoc.Themis.model.Usuario
+import com.Duoc.Themis.repository.SesionUsuario
 import com.Duoc.Themis.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.launch
 
 private val PATRON_CORREO = Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$")
 
-class AuthViewModel(private val repositorio: UsuarioRepository) : ViewModel() {
+class AuthViewModel(
+    private val repositorio: UsuarioRepository,
+    private val sesion: SesionUsuario
+) : ViewModel() {
 
     private val _formulario = MutableStateFlow(FormularioAuth())
     val formulario: StateFlow<FormularioAuth> = _formulario
@@ -27,8 +31,25 @@ class AuthViewModel(private val repositorio: UsuarioRepository) : ViewModel() {
     private val _registroExitoso = MutableStateFlow(false)
     val registroExitoso: StateFlow<Boolean> = _registroExitoso
 
-    private val _nombreUsuario = MutableStateFlow("")
-    val nombreUsuario: StateFlow<String> = _nombreUsuario
+    private val _usuarioActual = MutableStateFlow<Usuario?>(null)
+    val usuarioActual: StateFlow<Usuario?> = _usuarioActual
+
+    init {
+        // Si había una sesión guardada, recupera los datos del usuario al abrir la app
+        sesion.obtener()?.let { correo ->
+            viewModelScope.launch {
+                _usuarioActual.value = repositorio.buscarPorCorreo(correo)
+            }
+        }
+    }
+
+    fun haySesion(): Boolean = sesion.obtener() != null
+
+    fun cerrarSesion() {
+        sesion.cerrar()
+        _usuarioActual.value = null
+        limpiarFormulario()
+    }
 
     fun onNombreChange(valor: String) {
         _formulario.update { it.copy(nombre = valor) }
@@ -98,7 +119,8 @@ class AuthViewModel(private val repositorio: UsuarioRepository) : ViewModel() {
                 _aviso.value = "Correo o contraseña incorrectos"
                 return@launch
             }
-            _nombreUsuario.value = usuario.nombre
+            sesion.guardar(usuario.correo)
+            _usuarioActual.value = usuario
             alExito()
         }
     }

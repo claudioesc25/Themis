@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,16 +26,19 @@ fun PantallaMenu(nombreUsuario: String, alNavegar: (String) -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        LogoThemis(modifier = Modifier.size(96.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "Bienvenido, $nombreUsuario",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(32.dp))
+
         BotonMenu(texto = "Artículos", alClic = { alNavegar(Rutas.ARTICULOS) })
         BotonMenu(texto = "Leyes", alClic = { alNavegar(Rutas.LEYES) })
         BotonMenu(texto = "Cámara", alClic = { alNavegar(Rutas.CAMARA) })
-
+        BotonMenu(texto = "Mi usuario", alClic = { alNavegar(Rutas.PERFIL) })
     }
 }
 

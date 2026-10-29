@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.Duoc.Themis.model.ARTICULOS_CHILE
+import com.Duoc.Themis.model.LEYES_CHILE
 import com.Duoc.Themis.viewmodel.AuthViewModel
 
 object Rutas {
@@ -17,17 +19,19 @@ object Rutas {
     const val ARTICULOS = "articulos"
     const val LEYES = "leyes"
     const val CAMARA = "camara"
+    const val PERFIL = "perfil"
 }
 
 @Composable
 fun Navegacion(authViewModel: AuthViewModel) {
     val controlador = rememberNavController()
-    val nombreUsuario by authViewModel.nombreUsuario.collectAsState()
+    val usuarioActual by authViewModel.usuarioActual.collectAsState()
 
     NavHost(navController = controlador, startDestination = Rutas.CARGA) {
         composable(Rutas.CARGA) {
             PantallaCarga(alTerminar = {
-                controlador.navigate(Rutas.BIENVENIDA) {
+                val destino = if (authViewModel.haySesion()) Rutas.MENU else Rutas.BIENVENIDA
+                controlador.navigate(destino) {
                     popUpTo(Rutas.CARGA) { inclusive = true }
                 }
             })
@@ -62,15 +66,35 @@ fun Navegacion(authViewModel: AuthViewModel) {
         }
         composable(Rutas.MENU) {
             PantallaMenu(
-                nombreUsuario = nombreUsuario,
+                nombreUsuario = usuarioActual?.nombre ?: "",
                 alNavegar = { ruta -> controlador.navigate(ruta) }
             )
         }
+        composable(Rutas.PERFIL) {
+            PantallaPerfil(
+                usuario = usuarioActual,
+                alCerrarSesion = {
+                    authViewModel.cerrarSesion()
+                    controlador.navigate(Rutas.BIENVENIDA) {
+                        popUpTo(Rutas.MENU) { inclusive = true }
+                    }
+                },
+                alVolver = { controlador.popBackStack() }
+            )
+        }
         composable(Rutas.ARTICULOS) {
-            PantallaSeccion(titulo = "Articulos", alVolver = { controlador.popBackStack() })
+            PantallaSeccion(
+                titulo = "Artículos",
+                documentos = ARTICULOS_CHILE,
+                alVolver = { controlador.popBackStack() }
+            )
         }
         composable(Rutas.LEYES) {
-            PantallaSeccion(titulo = "Leyes", alVolver = { controlador.popBackStack() })
+            PantallaSeccion(
+                titulo = "Leyes",
+                documentos = LEYES_CHILE,
+                alVolver = { controlador.popBackStack() }
+            )
         }
         composable(Rutas.CAMARA) {
             PantallaCamara(alVolver = { controlador.popBackStack() })

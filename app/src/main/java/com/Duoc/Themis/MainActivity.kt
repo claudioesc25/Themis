@@ -1,5 +1,4 @@
 package com.Duoc.Themis
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,23 +12,25 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.room.Room
 import com.Duoc.Themis.model.AppDatabase
+import com.Duoc.Themis.repository.SesionUsuario
 import com.Duoc.Themis.repository.UsuarioRepository
 import com.Duoc.Themis.ui.Navegacion
 import com.Duoc.Themis.ui.theme.ThemisTheme
 import com.Duoc.Themis.viewmodel.AuthViewModel
-
 class MainActivity : ComponentActivity() {
-
     private val baseDatos by lazy {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "themis_db").build()
     }
-
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory {
-            initializer { AuthViewModel(UsuarioRepository(baseDatos.usuarioDao())) }
+            initializer {
+                AuthViewModel(
+                    repositorio = UsuarioRepository(baseDatos.usuarioDao()),
+                    sesion = SesionUsuario(applicationContext)
+                )
+            }
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
