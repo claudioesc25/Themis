@@ -40,11 +40,10 @@ android {
 
 dependencies {
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.play.services.location)
-    implementation(libs.kotlinx.coroutines.play.services)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

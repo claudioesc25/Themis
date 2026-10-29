@@ -4,122 +4,42 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.tooling.preview.Preview
-import com.Duoc.Themis.ui.theme.MyApplicationTheme
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.room.Room
+import com.Duoc.Themis.model.AppDatabase
+import com.Duoc.Themis.repository.UsuarioRepository
+import com.Duoc.Themis.ui.Navegacion
+import com.Duoc.Themis.ui.theme.ThemisTheme
+import com.Duoc.Themis.viewmodel.AuthViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val baseDatos by lazy {
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "themis_db").build()
+    }
+
+    private val authViewModel: AuthViewModel by viewModels {
+        viewModelFactory {
+            initializer { AuthViewModel(UsuarioRepository(baseDatos.usuarioDao())) }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
-                var nombre by remember { mutableStateOf("") }
-                var contraseña by remember { mutableStateOf("")  }
-                var modal by remember { mutableStateOf(false) }
-                var terminos by remember { mutableStateOf(false) }
-                fun abrirModal(){ modal = true }
-                fun cerrarModal(){ modal = false }
-
-                fun validarNombre(): Boolean{
-                    if(nombre==""){
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                fun validarContraseña(): Boolean{
-                    if(contraseña==""){
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                fun validarTerminos(): Boolean{
-                    if(terminos){
-                        return true
-                    }
-                    else {
-                        return false
-                    }
-                }
-                Column(
+            ThemisTheme {
+                Surface(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    color = MaterialTheme.colorScheme.background
                 ) {
-
-                    OutlinedTextField(
-                        value = nombre,
-                        onValueChange = { nombre = it },
-                        label = { Text("Ingresa correo") },
-                        isError = validarNombre(),
-                        supportingText = {
-                            if(validarNombre()){
-                                Text( "Debe ingresar un correo", color = Red)
-                            }
-                        }
-                    )
-                    OutlinedTextField(
-                        value = contraseña,
-                        onValueChange = { contraseña = it },
-                        label = { Text("Ingresa tu contraseña") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        isError = validarContraseña(),
-                        supportingText = {
-                            if (validarContraseña()) {
-                                Text("Debe ingresar una contraseña", color = Red)
-                            }
-                        }
-                    )
-                    Row( verticalAlignment = Alignment.CenterVertically){
-                        Checkbox(
-                            checked = terminos,
-                            onCheckedChange = { terminos = it },
-                        )
-                        Text(
-                            text="Acepta los términos y condiciones"
-                        )
-                    }
-
-                    Button(
-                        onClick={abrirModal()},
-                        enabled = validarTerminos() && !validarNombre()  && !validarContraseña()
-                    ) {
-                        Text(text="Enviar")
-                    }
-                }
-                if(modal) {
-                    AlertDialog(
-                        onDismissRequest = { },
-                        title = { Text("Confirmación") },
-                        text = { Text("Usuario registrado correctamente") },
-                        confirmButton = {
-                            Button(onClick = {cerrarModal()}) { Text("OK") }
-                        }
-                    )
+                    Navegacion(authViewModel)
                 }
             }
         }

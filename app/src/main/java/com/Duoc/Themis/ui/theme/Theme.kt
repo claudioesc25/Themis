@@ -2,18 +2,19 @@ package com.Duoc.Themis.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-private val EsquemaThemis = darkColorScheme(
+private val EsquemaThemis = lightColorScheme(
     primary = Dorado,
-    onPrimary = Negro,
+    onPrimary = AzulMarino,
     secondary = AzulMarino,
     onSecondary = Dorado,
-    background = Negro,
-    onBackground = Blanco,
-    surface = Negro,
-    onSurface = Blanco,
-    outline = Dorado
+    background = Cafe,
+    onBackground = AzulMarino,
+    surface = Cafe,
+    onSurface = AzulMarino,
+    outline = AzulMarino
 )
 
 @Composable
