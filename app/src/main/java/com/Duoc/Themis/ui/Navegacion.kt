@@ -11,15 +11,18 @@ import com.Duoc.Themis.model.LEYES_CHILE
 import com.Duoc.Themis.viewmodel.AuthViewModel
 
 object Rutas {
-    const val CARGA = "carga"
-    const val BIENVENIDA = "bienvenida"
-    const val LOGIN = "login"
-    const val REGISTRO = "registro"
-    const val MENU = "menu"
-    const val ARTICULOS = "articulos"
-    const val LEYES = "leyes"
-    const val CAMARA = "camara"
-    const val PERFIL = "perfil"
+        const val CARGA = "carga"
+        const val BIENVENIDA = "bienvenida"
+        const val LOGIN = "login"
+        const val REGISTRO = "registro"
+        const val MENU = "menu"
+        const val ARTICULOS = "articulos"
+        const val LEYES = "leyes"
+        const val CAMARA = "camara"
+        const val PERFIL = "perfil"
+
+        const val DOCUMENTOS_XANO = "documentos_xano"
+
 }
 
 @Composable
@@ -98,6 +101,10 @@ fun Navegacion(authViewModel: AuthViewModel) {
         }
         composable(Rutas.CAMARA) {
             PantallaCamara(alVolver = { controlador.popBackStack() })
+        }
+
+        composable(Rutas.DOCUMENTOS_XANO) {
+            DocumentosScreen()
         }
     }
 }

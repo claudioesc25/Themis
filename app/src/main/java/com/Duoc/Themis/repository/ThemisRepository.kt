@@ -1,0 +1,20 @@
+package com.Duoc.Themis.repository
+
+import com.Duoc.Themis.model.*
+import com.Duoc.Themis.remote.RetrofitInstance
+import retrofit2.Response
+
+class ThemisRepository {
+
+    // Documentos
+    suspend fun obtenerDocumentos(): List<Documento> = RetrofitInstance.api.obtenerDocumentos()
+    suspend fun crearDocumento(body: DocumentoRequest): Response<Documento> = RetrofitInstance.api.crearDocumento(body)
+
+    // Usuarios
+    suspend fun obtenerUsuarios(): List<UsuarioThemis> = RetrofitInstance.api.obtenerUsuarios()
+    suspend fun registrarUsuario(body: UsuarioRequest): Response<UsuarioThemis> = RetrofitInstance.api.registrarUsuario(body)
+
+    // Categorías y Notas
+    suspend fun obtenerCategorias(): List<Categoria> = RetrofitInstance.api.obtenerCategorias()
+    suspend fun obtenerNotas(): List<nota> = RetrofitInstance.api.obtenerNotas()
+}
