@@ -36,16 +36,38 @@ class ThemisViewModel : ViewModel() {
 
     // Método POST para registrar un usuario en Xano
     fun registrarUsuario(nombre: String, correo: String, contrasenia: String) {
+        println("1. Entró a registrarUsuario")
         viewModelScope.launch {
+            println("2. Entró a la corrutina")
             try {
-                val req = UsuarioRequest(nombre = nombre, correo = correo, contraseña = contrasenia)
+                println("3. Entró al TRY")
+                val req = UsuarioRequest(
+                    nombre = nombre,
+                    correo = correo,
+                    contraseña = contrasenia
+                )
+                println("4. Se creó el request")
+
                 val response = repository.registrarUsuario(req)
+
+                println("5. Se ejecutó la petición")
+
+                println("Código HTTP: ${response.code()}")
+                println("Respuesta: ${response.body()}")
+                println("Error: ${response.errorBody()?.string()}")
+
                 if (response.isSuccessful) {
                     _mensajeEstado.value = "¡Usuario registrado con éxito en Xano (POST)!"
                 } else {
                     _mensajeEstado.value = "Error al registrar el usuario"
                 }
+
             } catch (e: Exception) {
+
+                println("6. Entró al CATCH")
+                println("Error: ${e.message}")
+                e.printStackTrace()
+
                 _mensajeEstado.value = "Excepción: ${e.message}"
             }
         }

@@ -4,10 +4,6 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
-
-    // ==========================================
-    // 1. CATEGORÍAS (themis_categoria)
-    // ==========================================
     @GET("themis_categoria")
     suspend fun obtenerCategorias(): List<Categoria>
 
@@ -23,10 +19,6 @@ interface ApiService {
     @DELETE("themis_categoria/{id}")
     suspend fun eliminarCategoria(@Path("id") id: Int): Response<Unit>
 
-
-    // ==========================================
-    // 2. DOCUMENTOS LEGALES (themis_legal_document)
-    // ==========================================
     @GET("themis_legal_document")
     suspend fun obtenerDocumentos(): List<Documento>
 
@@ -42,10 +34,6 @@ interface ApiService {
     @DELETE("themis_legal_document/{id}")
     suspend fun eliminarDocumento(@Path("id") id: Int): Response<Unit>
 
-
-    // ==========================================
-    // 3. NOTAS (themis_nota)
-    // ==========================================
     @GET("themis_nota")
     suspend fun obtenerNotas(): List<nota>
 
@@ -61,10 +49,6 @@ interface ApiService {
     @DELETE("themis_nota/{id}")
     suspend fun eliminarNota(@Path("id") id: Int): Response<Unit>
 
-
-    // ==========================================
-    // 4. USUARIOS (themis_usuario)
-    // ==========================================
     @GET("themis_usuario")
     suspend fun obtenerUsuarios(): List<UsuarioThemis>
 

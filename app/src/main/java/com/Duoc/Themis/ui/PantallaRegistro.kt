@@ -113,7 +113,7 @@ fun PantallaRegistro(
         }
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { viewModel.registrar(alRegistrar) },
+            onClick = { viewModel.registrarUsuario("AAA","BBB@gmail.com","123456") },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrarse")

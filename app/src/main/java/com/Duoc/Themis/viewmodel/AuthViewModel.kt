@@ -2,10 +2,13 @@ package com.Duoc.Themis.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.Duoc.Themis.model.Documento
 import com.Duoc.Themis.model.ErroresFormulario
 import com.Duoc.Themis.model.FormularioAuth
 import com.Duoc.Themis.model.Usuario
+import com.Duoc.Themis.model.UsuarioRequest
 import com.Duoc.Themis.repository.SesionUsuario
+import com.Duoc.Themis.repository.ThemisRepository
 import com.Duoc.Themis.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +22,9 @@ class AuthViewModel(
     private val sesion: SesionUsuario
 ) : ViewModel() {
 
+    private val _documentos = MutableStateFlow<List<Documento>>(emptyList())
+    private val _mensajeEstado = MutableStateFlow<String>("")
+    private val repository = ThemisRepository()
     private val _formulario = MutableStateFlow(FormularioAuth())
     val formulario: StateFlow<FormularioAuth> = _formulario
 
@@ -174,4 +180,43 @@ class AuthViewModel(
 
     private fun validarTerminos(aceptaTerminos: Boolean): String? =
         if (aceptaTerminos) null else "Debes aceptar los términos y condiciones"
+
+    // Método POST para registrar un usuario en Xano
+    fun registrarUsuario(nombre: String, correo: String, contrasenia: String) {
+        println("1. Entró a registrarUsuario")
+        viewModelScope.launch {
+            println("2. Entró a la corrutina")
+            try {
+                println("3. Entró al TRY")
+                val req = UsuarioRequest(
+                    nombre = nombre,
+                    correo = correo,
+                    contraseña = contrasenia
+                )
+                println("4. Se creó el request")
+
+                val response = repository.registrarUsuario(req)
+
+                println("5. Se ejecutó la petición")
+
+                println("Código HTTP: ${response.code()}")
+                println("Respuesta: ${response.body()}")
+                println("Error: ${response.errorBody()?.string()}")
+
+                if (response.isSuccessful) {
+                    _mensajeEstado.value = "¡Usuario registrado con éxito en Xano (POST)!"
+                } else {
+                    _mensajeEstado.value = "Error al registrar el usuario"
+                }
+
+            } catch (e: Exception) {
+
+                println("6. Entró al CATCH")
+                println("Error: ${e.message}")
+                e.printStackTrace()
+
+                _mensajeEstado.value = "Excepción: ${e.message}"
+            }
+        }
+    }
 }
