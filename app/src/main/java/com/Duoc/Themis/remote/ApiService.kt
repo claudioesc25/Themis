@@ -55,12 +55,16 @@ interface ApiService {
     @GET("themis_usuario/{id}")
     suspend fun obtenerUsuarioPorId(@Path("id") id: Int): UsuarioThemis
 
-    @POST("themis_usuario")
-    suspend fun registrarUsuario(@Body body: UsuarioRequest): Response<UsuarioThemis>
 
     @PUT("themis_usuario/{id}")
     suspend fun actualizarUsuario(@Path("id") id: Int, @Body body: UsuarioRequest): Response<UsuarioThemis>
 
     @DELETE("themis_usuario/{id}")
     suspend fun eliminarUsuario(@Path("id") id: Int): Response<Unit>
+
+    @POST("auth/signup")
+    suspend fun registrarUsuario(@Body body: UsuarioRequest): Response<AuthResponse>
+
+    @POST("auth/login")
+    suspend fun iniciarSesion(@Body body: AuthRequest): Response<AuthResponse>
 }

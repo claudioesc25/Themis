@@ -39,6 +39,7 @@ fun PantallaRegistro(
 ) {
     val formulario by viewModel.formulario.collectAsState()
     val errores by viewModel.errores.collectAsState()
+    val mensajeEstado by viewModel.mensajeEstado.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.limpiarFormulario()
@@ -113,10 +114,17 @@ fun PantallaRegistro(
         }
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { viewModel.registrarUsuario("AAA","BBB@gmail.com","123456") },
+            onClick = { viewModel.registrarUsuario(formulario.nombre,formulario.correo,formulario.contrasena) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrarse")
+        }
+        if (mensajeEstado.isNotBlank()) {
+            Text(
+                text = mensajeEstado,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
         TextButton(onClick = alVolver) {
             Text("Volver")

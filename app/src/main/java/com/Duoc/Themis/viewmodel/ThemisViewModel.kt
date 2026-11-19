@@ -41,14 +41,14 @@ class ThemisViewModel : ViewModel() {
             println("2. Entró a la corrutina")
             try {
                 println("3. Entró al TRY")
-                val req = UsuarioRequest(
+                val request = UsuarioRequest(
                     nombre = nombre,
                     correo = correo,
-                    contraseña = contrasenia
+                    contrasena = contrasenia
                 )
                 println("4. Se creó el request")
 
-                val response = repository.registrarUsuario(req)
+                val response = repository.registrarUsuario(request)
 
                 println("5. Se ejecutó la petición")
 

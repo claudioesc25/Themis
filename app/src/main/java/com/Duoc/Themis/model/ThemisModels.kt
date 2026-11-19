@@ -58,4 +58,14 @@ data class NotaRequest(
 data class UsuarioRequest(
     val nombre: String,
     val correo: String,
-    val contraseña: String)
+    val contrasena: String
+)
+
+data class AuthRequest(
+    val correo: String,
+    val contrasena: String
+)
+
+data class AuthResponse(
+    val authToken: String
+)

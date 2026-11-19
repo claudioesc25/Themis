@@ -1,3 +1,4 @@
+
 package com.Duoc.Themis.repository
 
 import com.Duoc.Themis.model.*
@@ -7,14 +8,35 @@ import retrofit2.Response
 class ThemisRepository {
 
     // Documentos
-    suspend fun obtenerDocumentos(): List<Documento> = RetrofitInstance.api.obtenerDocumentos()
-    suspend fun crearDocumento(body: DocumentoRequest): Response<Documento> = RetrofitInstance.api.crearDocumento(body)
+    suspend fun obtenerDocumentos(): List<Documento> =
+        RetrofitInstance.api.obtenerDocumentos()
+
+    suspend fun crearDocumento(
+        body: DocumentoRequest
+    ): Response<Documento> =
+        RetrofitInstance.api.crearDocumento(body)
 
     // Usuarios
-    suspend fun obtenerUsuarios(): List<UsuarioThemis> = RetrofitInstance.api.obtenerUsuarios()
-    suspend fun registrarUsuario(body: UsuarioRequest): Response<UsuarioThemis> = RetrofitInstance.api.registrarUsuario(body)
+    suspend fun obtenerUsuarios(): List<UsuarioThemis> =
+        RetrofitInstance.api.obtenerUsuarios()
 
-    // Categorías y Notas
-    suspend fun obtenerCategorias(): List<Categoria> = RetrofitInstance.api.obtenerCategorias()
-    suspend fun obtenerNotas(): List<nota> = RetrofitInstance.api.obtenerNotas()
+    // Registro mediante Xano
+    suspend fun registrarUsuario(
+        body: UsuarioRequest
+    ): Response<AuthResponse> =
+        RetrofitInstance.api.registrarUsuario(body)
+
+    // Inicio de sesión mediante Xano
+    suspend fun iniciarSesion(
+        body: AuthRequest
+    ): Response<AuthResponse> =
+        RetrofitInstance.api.iniciarSesion(body)
+
+    // Categorías y notas
+    suspend fun obtenerCategorias(): List<Categoria> =
+        RetrofitInstance.api.obtenerCategorias()
+
+    suspend fun obtenerNotas(): List<nota> =
+        RetrofitInstance.api.obtenerNotas()
 }
+
