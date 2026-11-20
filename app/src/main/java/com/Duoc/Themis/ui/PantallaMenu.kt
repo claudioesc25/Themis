@@ -35,8 +35,7 @@ fun PantallaMenu(nombreUsuario: String, alNavegar: (String) -> Unit) {
             color = MaterialTheme.colorScheme.primary
         )
 
-        BotonMenu(texto = "Artículos", alClic = { alNavegar(Rutas.ARTICULOS) })
-        BotonMenu(texto = "Leyes", alClic = { alNavegar(Rutas.LEYES) })
+        BotonMenu(texto = "Leyes y Articulos", alClic = { alNavegar(Rutas.DOCUMENTOS_XANO) }) // <--- NUEVO BOTÓN
         BotonMenu(texto = "Cámara", alClic = { alNavegar(Rutas.CAMARA) })
         BotonMenu(texto = "Mi usuario", alClic = { alNavegar(Rutas.PERFIL) })
         BotonMenu(texto = "Mis notas", alClic = { alNavegar(Rutas.NOTAS) })

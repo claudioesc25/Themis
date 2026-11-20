@@ -23,24 +23,19 @@ fun DocumentosScreen(viewModel: ThemisViewModel = ThemisViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Documentos Legales (Xano)",
+            text = "Leyes y Articulos",
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top=55.dp)
+
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Muestra el mensaje de éxito o error de las peticiones POST
-        if (mensajeEstado.isNotEmpty()) {
-            Text(text = mensajeEstado, color = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        // Botón para probar una inserción (POST)
-        Button(onClick = {
-            viewModel.registrarUsuario("Diego", "diego@duoc.cl", "123456")
-        }) {
-            Text(text = "Probar Registro de Usuario (POST)")
-        }
+        // errores
+        //if (mensajeEstado.isNotEmpty()) {
+        //Text(text = mensajeEstado, color = MaterialTheme.colorScheme.primary)
+        //Spacer(modifier = Modifier.height(8.dp))
+        //}
 
         Spacer(modifier = Modifier.height(16.dp))
 
