@@ -15,7 +15,6 @@ import androidx.room.Room
 import com.Duoc.Themis.model.AppDatabase
 import com.Duoc.Themis.remote.RetrofitInstance
 import com.Duoc.Themis.repository.SesionUsuario
-import com.Duoc.Themis.repository.UsuarioRepository
 import com.Duoc.Themis.ui.Navegacion
 import com.Duoc.Themis.ui.theme.ThemisTheme
 import com.Duoc.Themis.viewmodel.AuthViewModel
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
         viewModelFactory {
             initializer {
                 AuthViewModel(
-                    repositorio = UsuarioRepository(baseDatos.usuarioDao()),
                     sesion = SesionUsuario(applicationContext)
                 )
             }
@@ -47,7 +45,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializar Retrofit y la sesiÃ³n
+        // Inicializar Retrofit y la sesión
         RetrofitInstance.inicializar(this)
 
         enableEdgeToEdge()

@@ -10,7 +10,7 @@ data class Categoria(
 data class Documento(
     val id: Int,
     val titulo: String,
-    val tipodocumento: String,
+    val tipo_documento: String,
     val contenido: String,
     val fecha_actualizacion: String,
     val fecha_publicacion: String,
@@ -42,7 +42,7 @@ data class CategoriaRequest(
 
 data class DocumentoRequest(
     val titulo: String,
-    val tipodocumento: String,
+    val tipo_documento: String,
     val contenido: String,
     val fecha_actualizacion: String,
     val fecha_publicacion: String,

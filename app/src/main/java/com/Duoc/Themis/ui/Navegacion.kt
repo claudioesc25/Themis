@@ -6,31 +6,27 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.Duoc.Themis.model.ARTICULOS_CHILE
-import com.Duoc.Themis.model.LEYES_CHILE
 import com.Duoc.Themis.viewmodel.AuthViewModel
 import com.Duoc.Themis.viewmodel.NotasViewModel
 
 object Rutas {
-        const val CARGA = "carga"
-        const val BIENVENIDA = "bienvenida"
-        const val LOGIN = "login"
-        const val REGISTRO = "registro"
-        const val MENU = "menu"
-        const val ARTICULOS = "articulos"
-        const val LEYES = "leyes"
-        const val CAMARA = "camara"
-        const val PERFIL = "perfil"
-
-        const val NOTAS = "notas"
-
-        const val DOCUMENTOS_XANO = "documentos_xano"
-        const val MAPA = "mapa"
-
+    const val CARGA = "carga"
+    const val BIENVENIDA = "bienvenida"
+    const val LOGIN = "login"
+    const val REGISTRO = "registro"
+    const val MENU = "menu"
+    const val PERFIL = "perfil"
+    const val NOTAS = "notas"
+    const val DOCUMENTOS_XANO = "documentos_xano"
+    const val CAMARA = "camara"
+    const val MAPA = "mapa"
 }
 
 @Composable
-fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
+fun Navegacion(
+    authViewModel: AuthViewModel,
+    notasViewModel: NotasViewModel
+) {
     val controlador = rememberNavController()
     val usuarioActual by authViewModel.usuarioActual.collectAsState()
 
@@ -43,12 +39,14 @@ fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
                 }
             })
         }
+
         composable(Rutas.BIENVENIDA) {
             PantallaBienvenida(
                 alIrALogin = { controlador.navigate(Rutas.LOGIN) },
                 alIrARegistro = { controlador.navigate(Rutas.REGISTRO) }
             )
         }
+
         composable(Rutas.LOGIN) {
             PantallaLogin(
                 viewModel = authViewModel,
@@ -60,6 +58,7 @@ fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
                 alVolver = { controlador.popBackStack() }
             )
         }
+
         composable(Rutas.REGISTRO) {
             PantallaRegistro(
                 viewModel = authViewModel,
@@ -71,12 +70,14 @@ fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
                 alVolver = { controlador.popBackStack() }
             )
         }
+
         composable(Rutas.MENU) {
             PantallaMenu(
                 nombreUsuario = usuarioActual?.nombre ?: "",
                 alNavegar = { ruta -> controlador.navigate(ruta) }
             )
         }
+
         composable(Rutas.PERFIL) {
             PantallaPerfil(
                 usuario = usuarioActual,
@@ -89,26 +90,9 @@ fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
                 alVolver = { controlador.popBackStack() }
             )
         }
-        composable(Rutas.ARTICULOS) {
-            PantallaSeccion(
-                titulo = "Artículos",
-                documentos = ARTICULOS_CHILE,
-                alVolver = { controlador.popBackStack() }
-            )
-        }
-        composable(Rutas.LEYES) {
-            PantallaSeccion(
-                titulo = "Leyes",
-                documentos = LEYES_CHILE,
-                alVolver = { controlador.popBackStack() }
-            )
-        }
-        composable(Rutas.CAMARA) {
-            PantallaCamara(alVolver = { controlador.popBackStack() })
-        }
 
         composable(Rutas.DOCUMENTOS_XANO) {
-            DocumentosScreen()
+            DocumentosScreen(viewModel = authViewModel)
         }
 
         composable(Rutas.NOTAS) {
@@ -117,6 +101,11 @@ fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
                 alVolver = { controlador.popBackStack() }
             )
         }
+
+        composable(Rutas.CAMARA) {
+            PantallaCamara(alVolver = { controlador.popBackStack() })
+        }
+
         composable(Rutas.MAPA) {
             PantallaMapa(alVolver = { controlador.popBackStack() })
         }

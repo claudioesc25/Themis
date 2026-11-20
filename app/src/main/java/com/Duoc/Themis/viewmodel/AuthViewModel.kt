@@ -10,7 +10,6 @@ import com.Duoc.Themis.model.Usuario
 import com.Duoc.Themis.model.UsuarioRequest
 import com.Duoc.Themis.repository.SesionUsuario
 import com.Duoc.Themis.repository.ThemisRepository
-import com.Duoc.Themis.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -20,19 +19,19 @@ private val PATRON_CORREO =
     Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$")
 
 class AuthViewModel(
-    private val repositorio: UsuarioRepository,
-    private val sesion: SesionUsuario
+    private val sesion: SesionUsuario,
+    private val repository: ThemisRepository = ThemisRepository()
 ) : ViewModel() {
 
     private val _documentos =
         MutableStateFlow<List<Documento>>(emptyList())
 
+    val documentos: StateFlow<List<Documento>> = _documentos
+
     private val _mensajeEstado =
         MutableStateFlow("")
 
     val mensajeEstado: StateFlow<String> = _mensajeEstado
-
-    private val repository = ThemisRepository()
 
     private val _formulario =
         MutableStateFlow(FormularioAuth())
@@ -64,6 +63,18 @@ class AuthViewModel(
         if (!sesion.obtenerToken().isNullOrBlank()) {
             viewModelScope.launch {
                 cargarPerfilDesdeXano()
+            }
+        }
+    }
+
+    // DOCUMENTOS DESDE XANO (GET themis_legal_document)
+    fun cargarDocumentos() {
+        viewModelScope.launch {
+            try {
+                _mensajeEstado.value = ""
+                _documentos.value = repository.obtenerDocumentos()
+            } catch (e: Exception) {
+                _mensajeEstado.value = "Error al cargar documentos: ${e.message}"
             }
         }
     }
