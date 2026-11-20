@@ -37,9 +37,10 @@ fun PantallaMenu(nombreUsuario: String, alNavegar: (String) -> Unit) {
 
         BotonMenu(texto = "Artículos", alClic = { alNavegar(Rutas.ARTICULOS) })
         BotonMenu(texto = "Leyes", alClic = { alNavegar(Rutas.LEYES) })
-        BotonMenu(texto = "Documentos en la Nube (Xano)", alClic = { alNavegar(Rutas.DOCUMENTOS_XANO) }) // <--- NUEVO BOTÓN
         BotonMenu(texto = "Cámara", alClic = { alNavegar(Rutas.CAMARA) })
         BotonMenu(texto = "Mi usuario", alClic = { alNavegar(Rutas.PERFIL) })
+        BotonMenu(texto = "Mis notas", alClic = { alNavegar(Rutas.NOTAS) })
+
     }
 }
 

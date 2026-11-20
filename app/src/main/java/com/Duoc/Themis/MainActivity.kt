@@ -1,4 +1,3 @@
-
 package com.Duoc.Themis
 
 import android.os.Bundle
@@ -20,6 +19,7 @@ import com.Duoc.Themis.repository.UsuarioRepository
 import com.Duoc.Themis.ui.Navegacion
 import com.Duoc.Themis.ui.theme.ThemisTheme
 import com.Duoc.Themis.viewmodel.AuthViewModel
+import com.Duoc.Themis.viewmodel.NotasViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -42,10 +42,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val notasViewModel: NotasViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializar Retrofit y la sesión
+        // Inicializar Retrofit y la sesiÃ³n
         RetrofitInstance.inicializar(this)
 
         enableEdgeToEdge()
@@ -56,7 +58,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navegacion(authViewModel)
+                    Navegacion(authViewModel, notasViewModel)
                 }
             }
         }

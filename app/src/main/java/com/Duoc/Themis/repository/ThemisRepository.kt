@@ -38,5 +38,14 @@ class ThemisRepository {
 
     suspend fun obtenerNotas(): List<nota> =
         RetrofitInstance.api.obtenerNotas()
+    suspend fun crearNota(body: NotaRequest): Response<nota> =
+        RetrofitInstance.api.crearNota(body)
+
+    suspend fun actualizarNota(id: Int, body: NotaRequest): Response<nota> =
+        RetrofitInstance.api.actualizarNota(id, body)
+
+    suspend fun eliminarNota(id: Int): Response<Unit> =
+        RetrofitInstance.api.eliminarNota(id)
+
 }
 

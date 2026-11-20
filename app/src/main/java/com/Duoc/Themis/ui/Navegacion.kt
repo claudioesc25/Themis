@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.Duoc.Themis.model.ARTICULOS_CHILE
 import com.Duoc.Themis.model.LEYES_CHILE
 import com.Duoc.Themis.viewmodel.AuthViewModel
+import com.Duoc.Themis.viewmodel.NotasViewModel
 
 object Rutas {
         const val CARGA = "carga"
@@ -21,12 +22,14 @@ object Rutas {
         const val CAMARA = "camara"
         const val PERFIL = "perfil"
 
+        const val NOTAS = "notas"
+
         const val DOCUMENTOS_XANO = "documentos_xano"
 
 }
 
 @Composable
-fun Navegacion(authViewModel: AuthViewModel) {
+fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
     val controlador = rememberNavController()
     val usuarioActual by authViewModel.usuarioActual.collectAsState()
 
@@ -105,6 +108,13 @@ fun Navegacion(authViewModel: AuthViewModel) {
 
         composable(Rutas.DOCUMENTOS_XANO) {
             DocumentosScreen()
+        }
+
+        composable(Rutas.NOTAS) {
+            PantallaNotas(
+                viewModel = notasViewModel,
+                alVolver = { controlador.popBackStack() }
+            )
         }
     }
 }

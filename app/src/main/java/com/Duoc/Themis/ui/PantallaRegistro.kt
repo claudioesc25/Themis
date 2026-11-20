@@ -39,7 +39,7 @@ fun PantallaRegistro(
 ) {
     val formulario by viewModel.formulario.collectAsState()
     val errores by viewModel.errores.collectAsState()
-    val mensajeEstado by viewModel.mensajeEstado.collectAsState()
+    //val mensajeEstado by viewModel.mensajeEstado.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.limpiarFormulario()
@@ -119,13 +119,14 @@ fun PantallaRegistro(
         ) {
             Text("Registrarse")
         }
-        if (mensajeEstado.isNotBlank()) {
-            Text(
-                text = mensajeEstado,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
+        //si existe un error con xano se activa esto para ver el error
+        //if (mensajeEstado.isNotBlank()) {
+        //   Text(
+        //text = mensajeEstado,
+        //color = MaterialTheme.colorScheme.primary,
+        //style = MaterialTheme.typography.bodyMedium
+        //   )
+        //}
         TextButton(onClick = alVolver) {
             Text("Volver")
         }

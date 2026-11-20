@@ -52,7 +52,7 @@ data class DocumentoRequest(
 data class NotaRequest(
     val titulo: String,
     val contenido: String,
-    val documento_id: Int
+    val documento_legal_id: Int? = null
 )
 
 data class UsuarioRequest(
