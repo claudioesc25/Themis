@@ -25,6 +25,7 @@ object Rutas {
         const val NOTAS = "notas"
 
         const val DOCUMENTOS_XANO = "documentos_xano"
+        const val MAPA = "mapa"
 
 }
 
@@ -115,6 +116,9 @@ fun Navegacion(authViewModel: AuthViewModel,notasViewModel: NotasViewModel) {
                 viewModel = notasViewModel,
                 alVolver = { controlador.popBackStack() }
             )
+        }
+        composable(Rutas.MAPA) {
+            PantallaMapa(alVolver = { controlador.popBackStack() })
         }
     }
 }
