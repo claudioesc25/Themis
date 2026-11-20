@@ -1,14 +1,13 @@
-
 package com.Duoc.Themis.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.Duoc.Themis.model.AuthRequest
 import com.Duoc.Themis.model.Documento
 import com.Duoc.Themis.model.ErroresFormulario
 import com.Duoc.Themis.model.FormularioAuth
 import com.Duoc.Themis.model.Usuario
 import com.Duoc.Themis.model.UsuarioRequest
-import com.Duoc.Themis.model.AuthRequest
 import com.Duoc.Themis.repository.SesionUsuario
 import com.Duoc.Themis.repository.ThemisRepository
 import com.Duoc.Themis.repository.UsuarioRepository
@@ -61,12 +60,32 @@ class AuthViewModel(
     val usuarioActual: StateFlow<Usuario?> = _usuarioActual
 
     init {
-        // Recuperar usuario de la sesión guardada
-        sesion.obtener()?.let { correo ->
+        // Si ya hay un token guardado, recuperamos el perfil desde Xano
+        if (!sesion.obtenerToken().isNullOrBlank()) {
             viewModelScope.launch {
-                _usuarioActual.value =
-                    repositorio.buscarPorCorreo(correo)
+                cargarPerfilDesdeXano()
             }
+        }
+    }
+
+    // PERFIL DESDE XANO (GET auth/me)
+    private suspend fun cargarPerfilDesdeXano() {
+        try {
+            val resp = repository.obtenerPerfil()
+            if (resp.isSuccessful) {
+                val perfil = resp.body()
+                _usuarioActual.value = Usuario(
+                    id = perfil?.id ?: 0,
+                    nombre = perfil?.nombre ?: "",
+                    correo = perfil?.correo ?: "",
+                    contrasena = ""
+                )
+            } else {
+                _aviso.value =
+                    "No se pudo cargar el perfil (${resp.code()}): ${resp.errorBody()?.string()}"
+            }
+        } catch (e: Exception) {
+            _aviso.value = "Error al cargar el perfil: ${e.message}"
         }
     }
 
@@ -173,19 +192,14 @@ class AuthViewModel(
                     sesion.guardar(formulario.correo.trim())
                     sesion.guardarToken(token)
 
-                    // La autenticación de Xano fue exitosa.
+                    // Cargamos nombre y correo desde Xano antes de entrar
+                    cargarPerfilDesdeXano()
+
                     alExito()
 
-                    // Buscamos el perfil local sin bloquear el ingreso.
-                    try {
-                        _usuarioActual.value =
-                            repositorio.buscarPorCorreo(formulario.correo.trim())
-                    } catch (e: Exception) {
-                        _usuarioActual.value = null
-                    }
-
                 } else {
-                    _aviso.value = "Error ${response.code()}: ${response.errorBody()?.string()}"
+                    _aviso.value =
+                        "Error ${response.code()}: ${response.errorBody()?.string()}"
                 }
 
             } catch (e: Exception) {
@@ -308,6 +322,9 @@ class AuthViewModel(
                     if (!token.isNullOrBlank()) {
                         sesion.guardar(correo.trim())
                         sesion.guardarToken(token)
+
+                        // Cargamos el perfil recién creado desde Xano
+                        cargarPerfilDesdeXano()
                     }
 
                     _mensajeEstado.value =

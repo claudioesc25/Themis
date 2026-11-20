@@ -67,4 +67,7 @@ interface ApiService {
 
     @POST("auth/login")
     suspend fun iniciarSesion(@Body body: AuthRequest): Response<AuthResponse>
+
+    @GET("auth/me")
+    suspend fun obtenerPerfil(): Response<PerfilResponse>
 }

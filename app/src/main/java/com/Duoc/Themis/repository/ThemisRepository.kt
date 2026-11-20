@@ -47,5 +47,8 @@ class ThemisRepository {
     suspend fun eliminarNota(id: Int): Response<Unit> =
         RetrofitInstance.api.eliminarNota(id)
 
+    suspend fun obtenerPerfil(): Response<PerfilResponse> =
+        RetrofitInstance.api.obtenerPerfil()
+
 }
 

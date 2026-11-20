@@ -69,3 +69,9 @@ data class AuthRequest(
 data class AuthResponse(
     val authToken: String
 )
+
+data class PerfilResponse(
+    val id: Int? = null,
+    val nombre: String? = null,
+    val correo: String? = null
+)
