@@ -65,6 +65,7 @@ fun Navegacion(
                 alRegistrar = {
                     controlador.navigate(Rutas.LOGIN) {
                         popUpTo(Rutas.REGISTRO) { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
                 alVolver = { controlador.popBackStack() }

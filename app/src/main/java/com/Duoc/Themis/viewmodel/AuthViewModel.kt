@@ -59,7 +59,6 @@ class AuthViewModel(
     val usuarioActual: StateFlow<Usuario?> = _usuarioActual
 
     init {
-        // Si ya hay un token guardado, recuperamos el perfil desde Xano
         if (!sesion.obtenerToken().isNullOrBlank()) {
             viewModelScope.launch {
                 cargarPerfilDesdeXano()
@@ -67,7 +66,6 @@ class AuthViewModel(
         }
     }
 
-    // DOCUMENTOS DESDE XANO (GET themis_legal_document)
     fun cargarDocumentos() {
         viewModelScope.launch {
             try {
@@ -79,7 +77,6 @@ class AuthViewModel(
         }
     }
 
-    // PERFIL DESDE XANO (GET auth/me)
     private suspend fun cargarPerfilDesdeXano() {
         try {
             val resp = repository.obtenerPerfil()
@@ -113,7 +110,6 @@ class AuthViewModel(
         _formulario.update {
             it.copy(nombre = valor)
         }
-
         _errores.update {
             it.copy(nombre = validarNombre(valor))
         }
@@ -123,7 +119,6 @@ class AuthViewModel(
         _formulario.update {
             it.copy(correo = valor)
         }
-
         _errores.update {
             it.copy(correo = validarCorreo(valor))
         }
@@ -133,7 +128,6 @@ class AuthViewModel(
         _formulario.update {
             it.copy(contrasena = valor)
         }
-
         _errores.update {
             it.copy(contrasena = validarContrasena(valor))
         }
@@ -143,7 +137,6 @@ class AuthViewModel(
         _formulario.update {
             it.copy(confirmacion = valor)
         }
-
         _errores.update {
             it.copy(
                 confirmacion = validarConfirmacion(
@@ -158,7 +151,6 @@ class AuthViewModel(
         _formulario.update {
             it.copy(aceptaTerminos = valor)
         }
-
         _errores.update {
             it.copy(terminos = validarTerminos(valor))
         }
@@ -167,6 +159,7 @@ class AuthViewModel(
     fun limpiarFormulario() {
         _formulario.value = FormularioAuth()
         _errores.value = ErroresFormulario()
+        _mensajeEstado.value = ""
     }
 
     fun cerrarAviso() {
@@ -177,7 +170,6 @@ class AuthViewModel(
         _registroExitoso.value = false
     }
 
-    // INICIAR SESIÓN CON XANO
     fun iniciarSesion(alExito: () -> Unit) {
         if (!validarInicioSesion()) return
 
@@ -203,25 +195,19 @@ class AuthViewModel(
                     sesion.guardar(formulario.correo.trim())
                     sesion.guardarToken(token)
 
-                    // Cargamos nombre y correo desde Xano antes de entrar
                     cargarPerfilDesdeXano()
-
                     alExito()
-
                 } else {
                     _aviso.value =
                         "Error ${response.code()}: ${response.errorBody()?.string()}"
                 }
-
             } catch (e: Exception) {
                 _aviso.value = "Error de conexión: ${e.message}"
             }
         }
     }
 
-    // VALIDAR REGISTRO
     private fun validarRegistro(): Boolean {
-
         val formulario = _formulario.value
 
         val nuevosErrores = ErroresFormulario(
@@ -236,11 +222,9 @@ class AuthViewModel(
         )
 
         _errores.value = nuevosErrores
-
         return nuevosErrores.sinErrores()
     }
 
-    // VALIDAR LOGIN
     private fun validarInicioSesion(): Boolean {
         val formulario = _formulario.value
 
@@ -250,41 +234,27 @@ class AuthViewModel(
         )
 
         _errores.value = nuevosErrores
-
         return nuevosErrores.sinErrores()
     }
 
-    // VALIDACIONES
     private fun validarNombre(nombre: String): String? =
         when {
-            nombre.isBlank() ->
-                "El nombre es obligatorio"
-
-            nombre.trim().length < 3 ->
-                "El nombre debe tener al menos 3 caracteres"
-
+            nombre.isBlank() -> "El nombre es obligatorio"
+            nombre.trim().length < 3 -> "El nombre debe tener al menos 3 caracteres"
             else -> null
         }
 
     private fun validarCorreo(correo: String): String? =
         when {
-            correo.isBlank() ->
-                "El correo es obligatorio"
-
-            !correo.trim().matches(PATRON_CORREO) ->
-                "El correo no tiene un formato válido"
-
+            correo.isBlank() -> "El correo es obligatorio"
+            !correo.trim().matches(PATRON_CORREO) -> "El correo no tiene un formato válido"
             else -> null
         }
 
     private fun validarContrasena(contrasena: String): String? =
         when {
-            contrasena.isBlank() ->
-                "La contraseña es obligatoria"
-
-            contrasena.length < 6 ->
-                "La contraseña debe tener al menos 6 caracteres"
-
+            contrasena.isBlank() -> "La contraseña es obligatoria"
+            contrasena.length < 6 -> "La contraseña debe tener al menos 6 caracteres"
             else -> null
         }
 
@@ -293,12 +263,8 @@ class AuthViewModel(
         confirmacion: String
     ): String? =
         when {
-            confirmacion.isBlank() ->
-                "Debes confirmar la contraseña"
-
-            confirmacion != contrasena ->
-                "Las contraseñas no coinciden"
-
+            confirmacion.isBlank() -> "Debes confirmar la contraseña"
+            confirmacion != contrasena -> "Las contraseñas no coinciden"
             else -> null
         }
 
@@ -308,51 +274,34 @@ class AuthViewModel(
         if (aceptaTerminos) null
         else "Debes aceptar los términos y condiciones"
 
-    // REGISTRAR USUARIO EN XANO
     fun registrarUsuario(
         nombre: String,
         correo: String,
         contrasenia: String
     ) {
         if (!validarRegistro()) return
+
         viewModelScope.launch {
             try {
-
+                _mensajeEstado.value = ""
                 val request = UsuarioRequest(
                     nombre = nombre.trim(),
                     correo = correo.trim(),
                     contrasena = contrasenia
                 )
 
-                val response =
-                    repository.registrarUsuario(request)
+                val response = repository.registrarUsuario(request)
 
                 if (response.isSuccessful) {
-                    val token = response.body()?.authToken
-
-                    if (!token.isNullOrBlank()) {
-                        sesion.guardar(correo.trim())
-                        sesion.guardarToken(token)
-
-                        // Cargamos el perfil recién creado desde Xano
-                        cargarPerfilDesdeXano()
-                    }
-
-                    _mensajeEstado.value =
-                        "¡Usuario registrado con éxito en Xano!"
-
+                    _mensajeEstado.value = "¡Usuario creado con éxito! Ya puedes iniciar sesión."
                     _registroExitoso.value = true
-
                 } else {
                     val error = response.errorBody()?.string()
-
                     _mensajeEstado.value =
                         "Error al registrar: ${error ?: response.code()}"
                 }
-
             } catch (e: Exception) {
-                _mensajeEstado.value =
-                    "Error de conexión: ${e.message}"
+                _mensajeEstado.value = "Error de conexión: ${e.message}"
             }
         }
     }

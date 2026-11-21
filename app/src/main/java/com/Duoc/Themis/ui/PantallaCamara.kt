@@ -1,9 +1,13 @@
 package com.Duoc.Themis.ui
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -16,9 +20,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,14 +34,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import java.io.File
 
 @Composable
 fun PantallaCamara(alVolver: () -> Unit) {
     val contexto = LocalContext.current
+    val actividad = contexto as? Activity
     var fotoUri by remember { mutableStateOf<Uri?>(null) }
     var foto by remember { mutableStateOf<Bitmap?>(null) }
+    var mensajePermiso by remember { mutableStateOf<String?>(null) }
 
     val lanzadorCamara = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
@@ -49,19 +59,61 @@ fun PantallaCamara(alVolver: () -> Unit) {
         }
     }
 
+    fun lanzarCaptura() {
+        mensajePermiso = null
+        val archivo = File.createTempFile("foto_themis", ".jpg", contexto.cacheDir)
+        val uri = FileProvider.getUriForFile(
+            contexto,
+            contexto.packageName + ".provider",
+            archivo
+        )
+        fotoUri = uri
+        lanzadorCamara.launch(uri)
+    }
+
     val lanzadorPermiso = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { concedido ->
         if (concedido) {
-            val archivo = File.createTempFile("foto_themis", ".jpg", contexto.cacheDir)
-            val uri = FileProvider.getUriForFile(contexto, contexto.packageName + ".provider", archivo)
-            fotoUri = uri
-            lanzadorCamara.launch(uri)
+            lanzarCaptura()
+        } else {
+            val puedeVolverAPedir = actividad?.let {
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    it,
+                    Manifest.permission.CAMERA
+                )
+            } ?: false
+
+            mensajePermiso = if (puedeVolverAPedir) {
+                "Necesitas dar permiso de cámara para tomar la foto."
+            } else {
+                "El permiso de cámara está bloqueado. Actívalo en los ajustes de la app."
+            }
         }
     }
 
+    fun solicitarCamara() {
+        val permisoConcedido = ContextCompat.checkSelfPermission(
+            contexto,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (permisoConcedido) {
+            lanzarCaptura()
+        } else {
+            lanzadorPermiso.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        solicitarCamara()
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -73,9 +125,31 @@ fun PantallaCamara(alVolver: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-        Button(onClick = { lanzadorPermiso.launch(Manifest.permission.CAMERA) }) {
-            Text("Tomar foto")
+
+        mensajePermiso?.let { aviso ->
+            Text(
+                text = aviso,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(12.dp))
         }
+
+        Button(onClick = { solicitarCamara() }) {
+            Text(if (foto == null) "Tomar foto" else "Tomar otra foto")
+        }
+
+        if (mensajePermiso?.contains("ajustes", ignoreCase = true) == true) {
+            TextButton(onClick = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", contexto.packageName, null)
+                }
+                contexto.startActivity(intent)
+            }) {
+                Text("Abrir ajustes")
+            }
+        }
+
         TextButton(onClick = alVolver) {
             Text("Volver")
         }
